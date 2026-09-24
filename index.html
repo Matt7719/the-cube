@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>The Cube</title>
 
 <style>
@@ -17,40 +18,42 @@ body {
   overflow-x: hidden;
 }
 
+.game {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px 16px 40px;
+}
+
 h1 {
-  margin: 24px 0 3px;
+  margin: 8px 0 2px;
   font-size: 34px;
-  letter-spacing: 4px;
+  letter-spacing: 5px;
 }
 
 .subtitle {
   margin: 0;
-  color: #666;
+  color: #777;
   font-size: 15px;
 }
 
-.game {
-  max-width: 500px;
-  margin: auto;
-  padding: 0 18px 35px;
-}
-
 .status {
-  margin: 18px auto 8px;
+  max-width: 390px;
+  margin: 22px auto 0;
   display: flex;
   justify-content: space-between;
-  max-width: 350px;
   font-weight: bold;
+  font-size: 17px;
 }
 
 .scene {
   width: 100%;
-  height: 340px;
-  perspective: 800px;
+  height: 355px;
+  perspective: 850px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   touch-action: none;
+  user-select: none;
 }
 
 .cube {
@@ -58,7 +61,6 @@ h1 {
   height: 180px;
   position: relative;
   transform-style: preserve-3d;
-  transform: rotateX(-22deg) rotateY(32deg);
 }
 
 .face {
@@ -68,20 +70,34 @@ h1 {
   padding: 5px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: 5px;
   background: #222;
   border: 2px solid #222;
+  backface-visibility: hidden;
 }
 
 .tile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fffdf6;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #aaa;
+  padding: 0;
+  margin: 0;
   border-radius: 7px;
+  background: #fffdf6;
+  color: #202020;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 25px;
   font-weight: bold;
-  border: 1px solid #aaa;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.tile.active {
+  background: #e8dfbb;
 }
 
 .front  { transform: rotateY(0deg) translateZ(90px); }
@@ -92,41 +108,71 @@ h1 {
 .bottom { transform: rotateX(-90deg) translateZ(90px); }
 
 .instructions {
+  max-width: 390px;
+  margin: 0 auto 14px;
+  padding: 15px 17px;
   background: white;
   border-radius: 14px;
-  padding: 15px;
-  margin: 0 auto 14px;
-  max-width: 380px;
-  line-height: 1.4;
   font-size: 15px;
+  line-height: 1.45;
 }
 
-.controls {
+.instructions strong {
+  font-size: 17px;
+}
+
+.feedback {
+  min-height: 48px;
+  max-width: 390px;
+  margin: 0 auto 12px;
+  font-weight: bold;
+  line-height: 1.35;
+}
+
+.legend {
+  max-width: 390px;
+  margin: auto;
   display: flex;
+  gap: 8px;
   justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
 }
 
-button {
+.pill {
+  background: #dedbd1;
+  border-radius: 20px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.reset {
+  margin-top: 16px;
   border: 0;
   border-radius: 10px;
-  padding: 12px 17px;
-  font-size: 16px;
+  padding: 11px 18px;
+  font-size: 15px;
   font-weight: bold;
   background: #202020;
   color: white;
 }
 
-button.secondary {
-  background: #dedbd1;
-  color: #222;
-}
+@media (max-width: 390px) {
+  .scene { height: 330px; }
 
-#message {
-  min-height: 25px;
-  margin-top: 15px;
-  font-weight: bold;
+  .cube,
+  .face {
+    width: 168px;
+    height: 168px;
+  }
+
+  .front  { transform: rotateY(0deg) translateZ(84px); }
+  .right  { transform: rotateY(90deg) translateZ(84px); }
+  .back   { transform: rotateY(180deg) translateZ(84px); }
+  .left   { transform: rotateY(-90deg) translateZ(84px); }
+  .top    { transform: rotateX(90deg) translateZ(84px); }
+  .bottom { transform: rotateX(-90deg) translateZ(84px); }
+
+  .tile { font-size: 23px; }
 }
 </style>
 </head>
@@ -135,152 +181,351 @@ button.secondary {
 
 <div class="game">
 
-<h1>THE CUBE</h1>
-<p class="subtitle">Prototype #001</p>
+  <h1>THE CUBE</h1>
+  <p class="subtitle">Prototype #002</p>
 
-<div class="status">
-  <span>BIG WORD: 9 letters</span>
-  <span>Moves: <span id="moves">0</span></span>
-</div>
-
-<div class="scene" id="scene">
-  <div class="cube" id="cube">
-
-    <div class="face front">
-      <div class="tile">T</div><div class="tile">A</div><div class="tile">R</div>
-      <div class="tile">N</div><div class="tile">E</div><div class="tile">I</div>
-      <div class="tile">S</div><div class="tile">L</div><div class="tile">O</div>
-    </div>
-
-    <div class="face right">
-      <div class="tile">C</div><div class="tile">R</div><div class="tile">E</div>
-      <div class="tile">A</div><div class="tile">D</div><div class="tile">S</div>
-      <div class="tile">T</div><div class="tile">O</div><div class="tile">I</div>
-    </div>
-
-    <div class="face back">
-      <div class="tile">H</div><div class="tile">U</div><div class="tile">M</div>
-      <div class="tile">N</div><div class="tile">G</div><div class="tile">E</div>
-      <div class="tile">A</div><div class="tile">L</div><div class="tile">S</div>
-    </div>
-
-    <div class="face left">
-      <div class="tile">O</div><div class="tile">P</div><div class="tile">R</div>
-      <div class="tile">T</div><div class="tile">I</div><div class="tile">E</div>
-      <div class="tile">V</div><div class="tile">A</div><div class="tile">N</div>
-    </div>
-
-    <div class="face top">
-      <div class="tile">E</div><div class="tile">L</div><div class="tile">S</div>
-      <div class="tile">C</div><div class="tile">A</div><div class="tile">D</div>
-      <div class="tile">T</div><div class="tile">O</div><div class="tile">R</div>
-    </div>
-
-    <div class="face bottom">
-      <div class="tile">N</div><div class="tile">U</div><div class="tile">R</div>
-      <div class="tile">E</div><div class="tile">I</div><div class="tile">P</div>
-      <div class="tile">S</div><div class="tile">T</div><div class="tile">O</div>
-    </div>
-
+  <div class="status">
+    <span>BIG WORD: 9 letters</span>
+    <span>Moves: <span id="moves">0</span></span>
   </div>
-</div>
 
-<div class="instructions">
-  <strong>First experiment:</strong><br>
-  Put your finger beside the cube and drag.<br>
-  You should be able to turn it freely in 3D.
-</div>
+  <div class="scene" id="scene">
+    <div class="cube" id="cube"></div>
+  </div>
 
-<div class="controls">
-  <button id="shuffle">TWIST</button>
-  <button class="secondary" id="reset">RESET VIEW</button>
-</div>
+  <div class="instructions">
+    <strong>Now try touching the cube.</strong><br>
+    Swipe <b>across a letter</b> to twist its row.<br>
+    Swipe <b>up/down across a letter</b> to twist its column.<br>
+    Drag from the space around the cube to rotate your view.
+  </div>
 
-<div id="message">Can you find the hidden 9-letter word?</div>
+  <div class="feedback" id="feedback">
+    Scrambled. Somewhere in here is a 9-letter word.
+  </div>
+
+  <div class="legend">
+    <div class="pill">↔ ROW</div>
+    <div class="pill">↕ COLUMN</div>
+    <div class="pill">DRAG = LOOK</div>
+  </div>
+
+  <button class="reset" id="reset">RESTART</button>
 
 </div>
 
 <script>
+const faceNames =
+  ["front", "right", "back", "left", "top", "bottom"];
+
+const startingFaces = {
+  front:  ["T","A","R","N","E","I","S","L","O"],
+  right:  ["C","R","E","A","D","S","T","O","I"],
+  back:   ["H","U","M","N","G","E","A","L","S"],
+  left:   ["O","P","R","T","I","E","V","A","N"],
+  top:    ["E","L","S","C","A","D","T","O","R"],
+  bottom: ["N","U","R","E","I","P","S","T","O"]
+};
+
+let faces = cloneFaces(startingFaces);
+
 const cube = document.getElementById("cube");
 const scene = document.getElementById("scene");
-const movesText = document.getElementById("moves");
-const message = document.getElementById("message");
+const movesEl = document.getElementById("moves");
+const feedback = document.getElementById("feedback");
 
 let rotX = -22;
 let rotY = 32;
+let moves = 0;
+
+let gesture = null;
 let startX = 0;
 let startY = 0;
-let oldX = rotX;
-let oldY = rotY;
-let dragging = false;
-let moves = 0;
+let startRotX = 0;
+let startRotY = 0;
+let startFace = null;
+let startIndex = null;
+
+function cloneFaces(source) {
+  const result = {};
+  faceNames.forEach(name => {
+    result[name] = [...source[name]];
+  });
+  return result;
+}
 
 function drawCube() {
   cube.style.transform =
     `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
 }
 
-scene.addEventListener("pointerdown", e => {
-  dragging = true;
-  startX = e.clientX;
-  startY = e.clientY;
-  oldX = rotX;
-  oldY = rotY;
-  scene.setPointerCapture(e.pointerId);
-});
+function renderFaces() {
+  cube.innerHTML = "";
 
-scene.addEventListener("pointermove", e => {
-  if (!dragging) return;
+  faceNames.forEach(faceName => {
+    const face = document.createElement("div");
+    face.className = "face " + faceName;
+    face.dataset.face = faceName;
 
-  const dx = e.clientX - startX;
-  const dy = e.clientY - startY;
+    faces[faceName].forEach((letter, index) => {
+      const tile = document.createElement("div");
 
-  rotY = oldY + dx * 0.5;
-  rotX = oldX - dy * 0.5;
+      tile.className = "tile";
+      tile.textContent = letter;
+      tile.dataset.face = faceName;
+      tile.dataset.index = index;
+
+      face.appendChild(tile);
+    });
+
+    cube.appendChild(face);
+  });
 
   drawCube();
-});
+}
 
-scene.addEventListener("pointerup", () => {
-  dragging = false;
-});
+function getRow(array, row) {
+  return array.slice(row * 3, row * 3 + 3);
+}
 
-document.getElementById("reset").onclick = () => {
-  rotX = -22;
-  rotY = 32;
-  drawCube();
-};
+function setRow(array, row, values) {
+  for (let i = 0; i < 3; i++) {
+    array[row * 3 + i] = values[i];
+  }
+}
 
-document.getElementById("shuffle").onclick = () => {
+function getCol(array, col) {
+  return [
+    array[col],
+    array[col + 3],
+    array[col + 6]
+  ];
+}
+
+function setCol(array, col, values) {
+  array[col] = values[0];
+  array[col + 3] = values[1];
+  array[col + 6] = values[2];
+}
+
+function reverse(values) {
+  return [...values].reverse();
+}
+
+/*
+  HORIZONTAL TURN
+
+  For this prototype, a horizontal swipe cycles
+  a complete strip around the four side faces.
+
+  It therefore behaves like turning one horizontal
+  layer of a physical cube.
+*/
+function turnRow(row, direction) {
+
+  const F = getRow(faces.front, row);
+  const R = getRow(faces.right, row);
+  const B = getRow(faces.back, row);
+  const L = getRow(faces.left, row);
+
+  if (direction > 0) {
+    setRow(faces.right, row, F);
+    setRow(faces.back, row, R);
+    setRow(faces.left, row, B);
+    setRow(faces.front, row, L);
+  } else {
+    setRow(faces.left, row, F);
+    setRow(faces.back, row, L);
+    setRow(faces.right, row, B);
+    setRow(faces.front, row, R);
+  }
+
   moves++;
-  movesText.textContent = moves;
+  movesEl.textContent = moves;
 
-  rotY += 90;
+  feedback.textContent =
+    "Row " + (row + 1) + " twisted.";
 
-  cube.style.transition = "transform .45s ease";
-  drawCube();
+  renderFaces();
+  flashStrip("row", row);
+}
+
+/*
+  VERTICAL TURN
+
+  This cycles a vertical strip through front,
+  top, back and bottom.
+
+  Reversals make the letters travel around the
+  cube rather than simply teleporting.
+*/
+function turnColumn(col, direction) {
+
+  const F = getCol(faces.front, col);
+  const T = getCol(faces.top, col);
+  const B = getCol(faces.back, 2 - col);
+  const D = getCol(faces.bottom, col);
+
+  if (direction < 0) {
+    setCol(faces.top, col, F);
+    setCol(faces.back, 2 - col, reverse(T));
+    setCol(faces.bottom, col, reverse(B));
+    setCol(faces.front, col, D);
+  } else {
+    setCol(faces.bottom, col, F);
+    setCol(faces.back, 2 - col, reverse(D));
+    setCol(faces.top, col, reverse(B));
+    setCol(faces.front, col, T);
+  }
+
+  moves++;
+  movesEl.textContent = moves;
+
+  feedback.textContent =
+    "Column " + (col + 1) + " twisted.";
+
+  renderFaces();
+  flashStrip("col", col);
+}
+
+function flashStrip(type, number) {
+  const visible =
+    cube.querySelectorAll(".front .tile");
+
+  visible.forEach((tile, i) => {
+    const row = Math.floor(i / 3);
+    const col = i % 3;
+
+    if (
+      (type === "row" && row === number) ||
+      (type === "col" && col === number)
+    ) {
+      tile.classList.add("active");
+    }
+  });
 
   setTimeout(() => {
-    cube.style.transition = "";
-  }, 450);
+    cube.querySelectorAll(".tile.active")
+      .forEach(tile => tile.classList.remove("active"));
+  }, 280);
+}
 
-  if (moves === 1) {
-    message.textContent =
-      "Good. Now imagine swiping an individual row...";
+scene.addEventListener("pointerdown", event => {
+
+  startX = event.clientX;
+  startY = event.clientY;
+
+  const tile = event.target.closest(".tile");
+
+  if (tile) {
+    gesture = "tile";
+    startFace = tile.dataset.face;
+    startIndex = Number(tile.dataset.index);
+  } else {
+    gesture = "look";
+    startRotX = rotX;
+    startRotY = rotY;
   }
 
-  if (moves === 2) {
-    message.textContent =
-      "...and that row actually twisting around the cube.";
+  scene.setPointerCapture(event.pointerId);
+});
+
+scene.addEventListener("pointermove", event => {
+
+  if (gesture !== "look") return;
+
+  const dx = event.clientX - startX;
+  const dy = event.clientY - startY;
+
+  rotY = startRotY + dx * 0.5;
+  rotX = startRotX - dy * 0.5;
+
+  if (rotX > 75) rotX = 75;
+  if (rotX < -75) rotX = -75;
+
+  drawCube();
+});
+
+scene.addEventListener("pointerup", event => {
+
+  if (!gesture) return;
+
+  const dx = event.clientX - startX;
+  const dy = event.clientY - startY;
+
+  if (gesture === "tile") {
+
+    const distance =
+      Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 25) {
+      feedback.textContent =
+        "Swipe across that letter to turn a layer.";
+      gesture = null;
+      return;
+    }
+
+    const row = Math.floor(startIndex / 3);
+    const col = startIndex % 3;
+
+    /*
+      The front face is our first fully intuitive
+      manipulation surface.
+
+      Other faces can still be inspected by
+      rotating the cube.
+    */
+
+    if (startFace !== "front") {
+      feedback.textContent =
+        "For #002, make layer swipes on the front face.";
+      gesture = null;
+      return;
+    }
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+
+      if (dx > 0) {
+        turnRow(row, 1);
+      } else {
+        turnRow(row, -1);
+      }
+
+    } else {
+
+      if (dy < 0) {
+        turnColumn(col, -1);
+      } else {
+        turnColumn(col, 1);
+      }
+    }
   }
 
-  if (moves === 3) {
-    message.textContent =
-      "That's what we build next. 😈";
-  }
-};
+  gesture = null;
+});
 
-drawCube();
+scene.addEventListener("pointercancel", () => {
+  gesture = null;
+});
+
+document.getElementById("reset")
+.addEventListener("click", () => {
+
+  faces = cloneFaces(startingFaces);
+
+  rotX = -22;
+  rotY = 32;
+  moves = 0;
+
+  movesEl.textContent = "0";
+
+  feedback.textContent =
+    "Back to the starting position.";
+
+  renderFaces();
+});
+
+renderFaces();
 </script>
 
 </body>
