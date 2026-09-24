@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>The Cube</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #f4f1e8;
+  font-family: Arial, sans-serif;
+  color: #202020;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+h1 {
+  margin: 24px 0 3px;
+  font-size: 34px;
+  letter-spacing: 4px;
+}
+
+.subtitle {
+  margin: 0;
+  color: #666;
+  font-size: 15px;
+}
+
+.game {
+  max-width: 500px;
+  margin: auto;
+  padding: 0 18px 35px;
+}
+
+.status {
+  margin: 18px auto 8px;
+  display: flex;
+  justify-content: space-between;
+  max-width: 350px;
+  font-weight: bold;
+}
+
+.scene {
+  width: 100%;
+  height: 340px;
+  perspective: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+.cube {
+  width: 180px;
+  height: 180px;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-22deg) rotateY(32deg);
+}
+
+.face {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  padding: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  background: #222;
+  border: 2px solid #222;
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fffdf6;
+  border-radius: 7px;
+  font-size: 25px;
+  font-weight: bold;
+  border: 1px solid #aaa;
+}
+
+.front  { transform: rotateY(0deg) translateZ(90px); }
+.right  { transform: rotateY(90deg) translateZ(90px); }
+.back   { transform: rotateY(180deg) translateZ(90px); }
+.left   { transform: rotateY(-90deg) translateZ(90px); }
+.top    { transform: rotateX(90deg) translateZ(90px); }
+.bottom { transform: rotateX(-90deg) translateZ(90px); }
+
+.instructions {
+  background: white;
+  border-radius: 14px;
+  padding: 15px;
+  margin: 0 auto 14px;
+  max-width: 380px;
+  line-height: 1.4;
+  font-size: 15px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 17px;
+  font-size: 16px;
+  font-weight: bold;
+  background: #202020;
+  color: white;
+}
+
+button.secondary {
+  background: #dedbd1;
+  color: #222;
+}
+
+#message {
+  min-height: 25px;
+  margin-top: 15px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+<h1>THE CUBE</h1>
+<p class="subtitle">Prototype #001</p>
+
+<div class="status">
+  <span>BIG WORD: 9 letters</span>
+  <span>Moves: <span id="moves">0</span></span>
+</div>
+
+<div class="scene" id="scene">
+  <div class="cube" id="cube">
+
+    <div class="face front">
+      <div class="tile">T</div><div class="tile">A</div><div class="tile">R</div>
+      <div class="tile">N</div><div class="tile">E</div><div class="tile">I</div>
+      <div class="tile">S</div><div class="tile">L</div><div class="tile">O</div>
+    </div>
+
+    <div class="face right">
+      <div class="tile">C</div><div class="tile">R</div><div class="tile">E</div>
+      <div class="tile">A</div><div class="tile">D</div><div class="tile">S</div>
+      <div class="tile">T</div><div class="tile">O</div><div class="tile">I</div>
+    </div>
+
+    <div class="face back">
+      <div class="tile">H</div><div class="tile">U</div><div class="tile">M</div>
+      <div class="tile">N</div><div class="tile">G</div><div class="tile">E</div>
+      <div class="tile">A</div><div class="tile">L</div><div class="tile">S</div>
+    </div>
+
+    <div class="face left">
+      <div class="tile">O</div><div class="tile">P</div><div class="tile">R</div>
+      <div class="tile">T</div><div class="tile">I</div><div class="tile">E</div>
+      <div class="tile">V</div><div class="tile">A</div><div class="tile">N</div>
+    </div>
+
+    <div class="face top">
+      <div class="tile">E</div><div class="tile">L</div><div class="tile">S</div>
+      <div class="tile">C</div><div class="tile">A</div><div class="tile">D</div>
+      <div class="tile">T</div><div class="tile">O</div><div class="tile">R</div>
+    </div>
+
+    <div class="face bottom">
+      <div class="tile">N</div><div class="tile">U</div><div class="tile">R</div>
+      <div class="tile">E</div><div class="tile">I</div><div class="tile">P</div>
+      <div class="tile">S</div><div class="tile">T</div><div class="tile">O</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="instructions">
+  <strong>First experiment:</strong><br>
+  Put your finger beside the cube and drag.<br>
+  You should be able to turn it freely in 3D.
+</div>
+
+<div class="controls">
+  <button id="shuffle">TWIST</button>
+  <button class="secondary" id="reset">RESET VIEW</button>
+</div>
+
+<div id="message">Can you find the hidden 9-letter word?</div>
+
+</div>
+
+<script>
+const cube = document.getElementById("cube");
+const scene = document.getElementById("scene");
+const movesText = document.getElementById("moves");
+const message = document.getElementById("message");
+
+let rotX = -22;
+let rotY = 32;
+let startX = 0;
+let startY = 0;
+let oldX = rotX;
+let oldY = rotY;
+let dragging = false;
+let moves = 0;
+
+function drawCube() {
+  cube.style.transform =
+    `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+}
+
+scene.addEventListener("pointerdown", e => {
+  dragging = true;
+  startX = e.clientX;
+  startY = e.clientY;
+  oldX = rotX;
+  oldY = rotY;
+  scene.setPointerCapture(e.pointerId);
+});
+
+scene.addEventListener("pointermove", e => {
+  if (!dragging) return;
+
+  const dx = e.clientX - startX;
+  const dy = e.clientY - startY;
+
+  rotY = oldY + dx * 0.5;
+  rotX = oldX - dy * 0.5;
+
+  drawCube();
+});
+
+scene.addEventListener("pointerup", () => {
+  dragging = false;
+});
+
+document.getElementById("reset").onclick = () => {
+  rotX = -22;
+  rotY = 32;
+  drawCube();
+};
+
+document.getElementById("shuffle").onclick = () => {
+  moves++;
+  movesText.textContent = moves;
+
+  rotY += 90;
+
+  cube.style.transition = "transform .45s ease";
+  drawCube();
+
+  setTimeout(() => {
+    cube.style.transition = "";
+  }, 450);
+
+  if (moves === 1) {
+    message.textContent =
+      "Good. Now imagine swiping an individual row...";
+  }
+
+  if (moves === 2) {
+    message.textContent =
+      "...and that row actually twisting around the cube.";
+  }
+
+  if (moves === 3) {
+    message.textContent =
+      "That's what we build next. 😈";
+  }
+};
+
+drawCube();
+</script>
+
+</body>
+</html>
